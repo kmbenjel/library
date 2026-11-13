@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خِزانةٌ في الجيب — دراسة حالة</title>
+<meta name="description" content="كيف صار هاتفٌ فيه آلاف الملفات بلا ترتيب مكتبةَ تراثٍ مسمّاة مرتّبة يُبحث فيها، من 16,757 ملفًا في أربعين قسمًا: قواعد مكتوبة، ووكلاء ذكاء اصطناعي يعملون تحتها، وسجلّ لكل تغيير، ورؤية حاسوبية بلا فقد. A Library in a Pocket — case study.">
+<link rel="canonical" href="https://benjelloun.dev/library/story">
+<meta property="og:url" content="https://benjelloun.dev/library/story">
+<meta property="og:title" content="خِزانةٌ في الجيب — A Library in a Pocket">
+<meta property="og:description" content="16,757 Arabic heritage PDFs on one phone, named, ordered and searchable: rules written before code, AI agents working under them, 532 reversible plans, 97,925 logged changes, 474,268 pages set straight by computer vision.">
+<meta property="og:image" content="img/poster.jpg">
+<meta name="color-scheme" content="light dark">
+<link rel="preload" href="fonts/Amiri-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/IBMPlexSansArabic-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: 'Amiri'; font-weight: 400; font-display: swap; src: url('fonts/Amiri-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'Amiri'; font-weight: 700; font-display: swap; src: url('fonts/Amiri-Bold.woff2') format('woff2'); }
+  @font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 400; font-display: swap; src: url('fonts/IBMPlexSansArabic-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 500; font-display: swap; src: url('fonts/IBMPlexSansArabic-Medium.woff2') format('woff2'); }
+  @font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 600; font-display: swap; src: url('fonts/IBMPlexSansArabic-SemiBold.woff2') format('woff2'); }
+  @font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 700; font-display: swap; src: url('fonts/IBMPlexSansArabic-Bold.woff2') format('woff2'); }
+  @font-face { font-family: 'Kawkab Mono'; font-weight: 400; font-display: swap; src: url('fonts/KawkabMono-Regular.woff2') format('woff2'); }
+  @font-face { font-family: 'Kawkab Mono'; font-weight: 700; font-display: swap; src: url('fonts/KawkabMono-Bold.woff2') format('woff2'); }
+  @font-face { font-family: 'Readex Pro'; font-weight: 300 700; font-display: swap; src: url('fonts/ReadexPro-VF.woff2') format('woff2'); }
+
+  :root {
+    --paper: #fbfaf7; --paper-2: #f3eee4; --line: #e4ddd0; --ink: #1f1b16; --ink-2: #332e25; --muted: #6b6358;
+    --walnut: #7a4b1e; --gold: #e0a86a; --gold-2: #e0b060; --cream: #fff6e5; --before: #9b2c2c; --verified: #2f7a4a;
+    --card: #ffffff; --code: #f3eee4;
+    --amiri: 'Amiri', 'Noto Naskh Arabic', serif;
+    --plex: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif;
+    --mono: 'Kawkab Mono', 'IBM Plex Sans Arabic', ui-monospace, monospace;
+    --readex: 'Readex Pro', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --paper: #16140f; --paper-2: #1f1b16; --line: #34312c; --ink: #ece8e1; --ink-2: #d9d3c9; --muted: #a39c91;
+      --walnut: #c99a5b; --cream: #241f16; --card: #1b1813; --code: #1f1b16; --before: #d06a6a; }
+  }
+  :root[data-theme="dark"] { --paper: #16140f; --paper-2: #1f1b16; --line: #34312c; --ink: #ece8e1; --ink-2: #d9d3c9; --muted: #a39c91;
+      --walnut: #c99a5b; --cream: #241f16; --card: #1b1813; --code: #1f1b16; --before: #d06a6a; }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--plex); font-size: 1.05rem; line-height: 1.85; -webkit-font-smoothing: antialiased; }
+  html[data-lang="en"] body { font-family: var(--readex); line-height: 1.7; }
+  html[data-lang="ar"] .L[lang="en"] { display: none; }
+  html[data-lang="en"] .L[lang="ar"] { display: none; }
+  html.nojs .L { display: block !important; }
+  .skip { position: absolute; inset-inline-start: -999px; top: 8px; background: var(--walnut); color: #fff; padding: 8px 14px; border-radius: 6px; z-index: 10; }
+  .skip:focus { inset-inline-start: 8px; }
+  a { color: var(--walnut); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+  header.top { border-bottom: 1px solid var(--line); background: var(--paper); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
+  .lockup { display: inline-flex; align-items: center; direction: rtl; gap: 14px; text-decoration: none; color: inherit; }
+  .lockup svg { width: 44px; height: 44px; flex: none; }
+  .lockup .w { font-family: var(--amiri); font-weight: 700; font-size: 26px; line-height: 1; color: var(--ink); }
+  .lockup .l { font-family: var(--plex); font-weight: 600; font-size: 9px; letter-spacing: 0.12em; color: var(--muted); direction: ltr; text-align: right; margin-top: 3px; }
+  .tools { display: flex; align-items: center; gap: 10px; }
+  .tools button { font: inherit; font-size: 0.9rem; background: var(--paper-2); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .tools button[aria-pressed="true"] { background: var(--walnut); color: #fff; border-color: var(--walnut); }
+  nav.toc { font-size: 0.92rem; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  nav.toc a { color: var(--muted); text-decoration: none; }
+  nav.toc a:hover { color: var(--walnut); text-decoration: underline; }
+
+  .hero { padding: 48px 0 24px; }
+  .kicker { font-size: 0.95rem; color: var(--muted); margin: 0 0 8px; }
+  h1 { font-family: var(--amiri); font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.6rem); line-height: 1.3; margin: 0 0 10px; }
+  html[data-lang="en"] h1 { font-family: var(--readex); font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+  h1 .ar-sub { display: block; font-family: var(--amiri); font-weight: 700; font-size: 0.6em; color: var(--muted); direction: rtl; }
+  .sub { font-size: 1.25rem; color: var(--ink-2); margin: 0 0 24px; max-width: 42em; }
+  .strap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 0 0 28px; padding: 0; list-style: none; }
+  .strap li { background: #1f1b16; color: #ece8e1; border-radius: 10px; padding: 14px 16px; border: 1px solid var(--line); }
+  .strap .v { display: block; font-weight: 700; font-size: 1.9rem; color: var(--gold); line-height: 1.2; font-variant-numeric: tabular-nums lining-nums; direction: ltr; unicode-bidi: isolate; text-align: start; }
+  .strap .l { font-size: 0.9rem; color: #a39c91; }
+  .film { margin: 0; }
+  .film video, .film img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--line); background: #16140f; }
+  .film figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+
+  section.part { padding: 36px 0 8px; border-top: 1px solid var(--line); }
+  h2 { font-family: var(--amiri); font-weight: 700; font-size: clamp(1.7rem, 4vw, 2.3rem); line-height: 1.35; margin: 0 0 6px; }
+  html[data-lang="en"] h2 { font-family: var(--readex); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  h2 .no { color: var(--walnut); font-variant-numeric: lining-nums; margin-inline-end: 10px; }
+  h3 { font-family: var(--plex); font-weight: 600; font-size: 1.2rem; margin: 26px 0 6px; color: var(--ink); }
+  html[data-lang="en"] h3 { font-family: var(--readex); }
+  p { margin: 0 0 14px; max-width: 46em; }
+  .n { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums lining-nums; }
+  .file { font-family: var(--mono); font-size: 0.95em; unicode-bidi: isolate; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0 20px; padding: 0; list-style: none; }
+  .tiles li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .tiles .v { display: block; font-weight: 700; font-size: 1.7rem; line-height: 1.2; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; direction: ltr; unicode-bidi: isolate; text-align: start; }
+  .tiles .v.red { color: var(--before); }
+  .tiles .v.gold { color: var(--walnut); }
+  .tiles .l { font-size: 0.9rem; color: var(--muted); line-height: 1.5; display: block; }
+  .raw { font-family: var(--mono); background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 12px 0 18px; color: var(--before); line-height: 2; font-size: 0.95rem; overflow-x: auto; }
+  .raw div { unicode-bidi: isolate; white-space: nowrap; }
+  .raw .lt { direction: ltr; text-align: start; }
+  .rules { background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 18px 28px; margin: 14px 0 20px; }
+  .rules ol { margin: 0; padding-inline-start: 1.4em; font-family: var(--amiri); font-size: 1.45rem; line-height: 1.8; }
+  html[data-lang="en"] .rules ol { font-family: var(--readex); font-size: 1.2rem; line-height: 1.6; }
+  .rules li::marker { color: var(--walnut); font-weight: 700; }
+  dl.ledger { margin: 10px 0 20px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 6px 16px; font-size: 0.9rem; }
+  dl.ledger > div { display: grid; grid-template-columns: 6em 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  dl.ledger > div:last-child { border-bottom: 0; }
+  dl.ledger dt { color: var(--muted); font-size: 0.82rem; margin: 0; }
+  dl.ledger dd { margin: 0; overflow-wrap: anywhere; }
+  dl.ledger dd.m { font-family: var(--mono); font-size: 0.86rem; direction: rtl; unicode-bidi: isolate; }
+  dl.ledger dd.t { font-family: var(--mono); font-size: 0.86rem; direction: ltr; unicode-bidi: isolate; text-align: start; }
+  .tmpl { font-family: var(--mono); background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 8px 0 18px; direction: rtl; unicode-bidi: isolate; font-size: 1rem; overflow-x: auto; }
+  .name-pair { font-family: var(--mono); background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 8px 0 18px; direction: rtl; line-height: 1.9; overflow-x: auto; }
+  .name-pair .old { color: var(--before); text-decoration: line-through; display: block; }
+  .name-pair .new { color: var(--walnut); font-weight: 700; display: block; }
+  ol.timeline { list-style: none; padding: 0; margin: 10px 0 20px; border-inline-start: 2px solid var(--line); }
+  ol.timeline li { position: relative; padding: 0 22px 14px; }
+  ol.timeline li::before { content: ""; position: absolute; inset-inline-start: -7px; top: 10px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--walnut); }
+  ol.timeline li.gold::before { background: var(--gold); border-color: var(--gold); }
+  ol.timeline .d { display: block; font-size: 0.85rem; color: var(--muted); font-variant-numeric: lining-nums; }
+  figure.pair { margin: 16px 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  figure.pair > div { text-align: center; }
+  figure.pair img { width: 100%; height: auto; display: block; border-radius: 6px; }
+  figure.pair .before img { outline: 2px solid var(--before); }
+  figure.pair .after img { outline: 2px solid var(--gold); }
+  figure.pair > div > span { display: block; font-size: 0.9rem; color: var(--muted); margin-top: 6px; }
+  figure.pair figcaption { grid-column: 1 / -1; font-size: 0.9rem; color: var(--muted); }
+  figure.shot { margin: 16px 0 20px; }
+  figure.shot img { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); }
+  figure.shot figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 640px) { .two, figure.pair { grid-template-columns: 1fr; } }
+  blockquote.remark { margin: 16px 0 20px; background: var(--cream); border-inline-start: 5px solid var(--gold); border-radius: 8px; padding: 16px 22px; }
+  blockquote.remark p { font-family: var(--amiri); font-size: 1.5rem; line-height: 1.6; margin: 0; }
+  blockquote.remark footer { font-size: 0.9rem; color: var(--muted); margin-top: 8px; font-family: var(--plex); }
+  html[data-lang="en"] blockquote.remark footer { font-family: var(--readex); }
+  .chart { margin: 14px 0 20px; }
+  .chart .row { display: grid; grid-template-columns: 11em 1fr 5.5em; align-items: center; gap: 10px; margin: 6px 0; font-size: 0.92rem; }
+  .chart .bar { height: 14px; background: var(--walnut); border-radius: 3px; }
+  .chart .bar.gold { background: var(--gold); }
+  .chart .v { font-variant-numeric: tabular-nums lining-nums; direction: ltr; unicode-bidi: isolate; text-align: start; color: var(--muted); }
+  ul.plain { padding-inline-start: 1.3em; }
+  ul.plain li { margin-bottom: 6px; }
+  .lessons { counter-reset: l; list-style: none; padding: 0; margin: 12px 0 20px; display: grid; gap: 10px; }
+  .lessons li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .lessons li b { display: block; font-family: var(--amiri); font-size: 1.25rem; margin-bottom: 2px; }
+  html[data-lang="en"] .lessons li b { font-family: var(--readex); font-size: 1.1rem; font-weight: 600; }
+  .close { background: #1f1b16; color: #ece8e1; border-radius: 14px; padding: 28px 28px; margin: 24px 0 36px; }
+  .close h2 { color: #ece8e1; }
+  .close p { color: #d9d3c9; }
+  .close .big { font-family: var(--amiri); font-size: 1.6rem; line-height: 1.6; color: #ece8e1; }
+  html[data-lang="en"] .close .big { font-family: var(--readex); font-size: 1.3rem; }
+  .close a { color: var(--gold); }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+  .links a { display: block; border: 1px solid #34312c; border-radius: 10px; padding: 12px 14px; text-decoration: none; color: #ece8e1; }
+  .links a span { display: block; color: var(--gold); font-family: var(--readex); direction: ltr; font-size: 0.95rem; }
+  .links a:hover { border-color: var(--gold); }
+  footer.site { border-top: 1px solid var(--line); padding: 20px 0 40px; font-size: 0.88rem; color: var(--muted); }
+  footer.site a { color: var(--muted); }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.remove('nojs');</script>
+<a class="skip" href="#main"><span class="L" lang="ar">إلى المحتوى</span><span class="L" lang="en">Skip to content</span></a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="lockup" href="https://benjelloun.dev/library" aria-label="خزانة — Khizana">
+      <svg viewBox="0 0 128 128" aria-hidden="true"><rect x="28" y="14" width="72" height="100" rx="7" ry="7" fill="#fbfaf7" stroke="#7a4b1e" stroke-width="4" transform="rotate(-5 64 64)"/><rect x="42" y="34" width="44" height="60" rx="3" ry="3" fill="#e0a86a"/><g stroke="#1f1b16" stroke-width="4" stroke-linecap="round" fill="none"><line x1="80" y1="48" x2="54" y2="48"/><line x1="80" y1="60" x2="48" y2="60"/><line x1="80" y1="72" x2="48" y2="72"/><line x1="80" y1="84" x2="62" y2="84"/></g></svg>
+      <span><span class="w">خزانة</span><span class="l" style="display:block">KHIZANA</span></span>
+    </a>
+    <nav class="toc" aria-label="sections">
+      <ol class="L" lang="ar">
+        <li><a href="#problem">البداية</a></li><li><a href="#principle">المبدأ</a></li><li><a href="#names">الأسماء</a></li><li><a href="#verify">التحقق</a></li><li><a href="#pages">الصفحات</a></li><li><a href="#result">النتيجة</a></li><li><a href="#lessons">ما تعلمته</a></li>
+      </ol>
+      <ol class="L" lang="en">
+        <li><a href="#problem">Starting point</a></li><li><a href="#principle">Principle</a></li><li><a href="#names">Names</a></li><li><a href="#verify">Verification</a></li><li><a href="#pages">Pages</a></li><li><a href="#result">Result</a></li><li><a href="#lessons">Lessons</a></li>
+      </ol>
+    </nav>
+    <div class="tools">
+      <button type="button" id="lang-ar" aria-pressed="true" lang="ar" dir="rtl">العربية</button>
+      <button type="button" id="lang-en" aria-pressed="false" lang="en" dir="ltr">English</button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="L" lang="ar" dir="rtl">
+    <p class="kicker">دراسة حالة · <span class="n">2026</span></p>
+    <h1>خِزانةٌ في الجيب</h1>
+    <p class="sub">كيف صار هاتفٌ فيه آلاف الملفات بلا ترتيب مكتبةَ تراثٍ مسمّاة مرتّبة يُبحث فيها، من <span class="n">16,757</span> ملفًا في أربعين قسمًا — بقواعد مكتوبة قبل البرمجة، ووكلاء ذكاء اصطناعي يعملون تحتها، ورؤية حاسوبية على حواسيب سحابية، وإنسان له الكلمة الأخيرة.</p>
+    <ul class="strap" aria-label="أرقام رئيسية">
+      <li><span class="v">38</span><span class="l">يومًا</span></li>
+      <li><span class="v">16,757</span><span class="l">ملفًا · <span class="n">175 GB</span></span></li>
+      <li><span class="v">97,925</span><span class="l">تغييرًا مسجَّلًا</span></li>
+      <li><span class="v">474,268</span><span class="l">صفحة استقامت</span></li>
+    </ul>
+    <!-- FILM-PENDING: added when the film is final
+<figure class="film">
+      <video controls preload="none" playsinline poster="img/poster.jpg" aria-label="الفيلم: خِزانةٌ في الجيب (3 دقائق)">
+        <source src="film/khizana-16x9.mp4" type="video/mp4">
+        <track kind="subtitles" srclang="en" src="film/khizana.en.vtt" label="English">
+        <img src="img/poster.jpg" alt="ملصق الفيلم: خِزانةٌ في الجيب" width="1600" height="900">
+      </video>
+      <figcaption>الفيلم القصير (<span class="n">3</span> دقائق، عربي مع ترجمة إنجليزية). الأرقام في هذه الصفحة من سجلّ المشروع نفسه.</figcaption>
+    </figure>
+-->
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <p class="kicker">Case study · 2026</p>
+    <h1>A Library in a Pocket<span class="ar-sub">خِزانةٌ في الجيب</span></h1>
+    <p class="sub">How a phone holding thousands of unordered files became a named, ordered, searchable heritage library of 16,757 files in forty sections — with rules written before any code, AI agents working under them, computer vision on cloud machines, and a human with the last word.</p>
+    <ul class="strap" aria-label="key numbers">
+      <li><span class="v">38</span><span class="l">days</span></li>
+      <li><span class="v">16,757</span><span class="l">files · 175 GB</span></li>
+      <li><span class="v">97,925</span><span class="l">logged changes</span></li>
+      <li><span class="v">474,268</span><span class="l">pages set straight</span></li>
+    </ul>
+    <!-- FILM-PENDING: added when the film is final
+<figure class="film">
+      <video controls preload="none" playsinline poster="img/poster.jpg" aria-label="The film: A Library in a Pocket (3 minutes)">
+        <source src="film/khizana-16x9.mp4" type="video/mp4">
+        <track kind="subtitles" srclang="en" src="film/khizana.en.vtt" label="English" default>
+        <img src="img/poster.jpg" alt="Film poster: A Library in a Pocket" width="1600" height="900">
+      </video>
+      <figcaption>The short film (3 minutes, Arabic with English subtitles). Every number on this page comes from the project's own ledger.</figcaption>
+    </figure>
+-->
+  </div>
+</section>
+
+<!-- ═══════════ 1 · PROBLEM ═══════════ -->
+<section class="part" id="problem">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">1</span>البداية: الهاتف كما وُجد</h2>
+    <p>في الليلة الأولى جُرد الهاتف كما هو، قبل أن يُغيَّر فيه شيء: <span class="n">9,469</span> ملف PDF في <span class="n">29</span> مجلدًا، حجمها <span class="n">99.3 GB</span>، بلا نظام. عناوين مقطوعة في منتصف الكلمة، وأرقام بدل الأسماء، ولواحق لا تعني شيئًا، ومجلدات تجمع ما لا يجمعه شيء.</p>
+    <ul class="tiles">
+      <li><span class="v">9,469</span><span class="l">ملف PDF في <span class="n">29</span> مجلدًا</span></li>
+      <li><span class="v">99.3 GB</span><span class="l">حجم المجموعة</span></li>
+      <li><span class="v red">392</span><span class="l">ملفًا ليست كتبًا أصلًا: صفحات ويب وملفات صوتية وغيرها</span></li>
+      <li><span class="v red">841</span><span class="l">نسخة زائدة من كتب موجودة</span></li>
+    </ul>
+    <p>أسماء حقيقية من تلك الليلة، كما يحفظها سجلّ التغييرات:</p>
+    <div class="raw" dir="rtl">
+      <div class="lt">03_44057.pdf</div>
+      <div class="lt">00_77409.pdf</div>
+      <div>إيصال السالك إلى أصول مذهب الإمام م</div>
+      <div>01 - الحيوان_alt.pdf</div>
+      <div>مراتب الإجماع (نسخة ثانية).pdf</div>
+      <div>صيد الخاطر - ت_ الطنطاوي والألباني</div>
+    </div>
+    <p>الأول كتاب حقيقي — الجزء الثاني من «سمط اللآلي» — ولا شيء في اسمه يقول ذلك. <span class="n">617</span> ملفًا كانت على هذا النمط.</p>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">1</span>The starting point: the phone as it was</h2>
+    <p>On the first night the phone was inventoried as it was, before anything was changed: 9,469 PDF files in 29 folders, 99.3 GB, with no system. Titles cut off mid-word, numbers instead of names, suffixes that meant nothing, and folders holding whatever belonged nowhere.</p>
+    <ul class="tiles">
+      <li><span class="v">9,469</span><span class="l">PDF files in 29 folders</span></li>
+      <li><span class="v">99.3 GB</span><span class="l">the collection's size</span></li>
+      <li><span class="v red">392</span><span class="l">files that were not books at all: web pages, audio and more</span></li>
+      <li><span class="v red">841</span><span class="l">surplus copies of books already there</span></li>
+    </ul>
+    <p>Real names from that night, as the change log keeps them:</p>
+    <div class="raw" dir="rtl">
+      <div class="lt">03_44057.pdf</div>
+      <div class="lt">00_77409.pdf</div>
+      <div>إيصال السالك إلى أصول مذهب الإمام م</div>
+      <div>01 - الحيوان_alt.pdf</div>
+      <div>مراتب الإجماع (نسخة ثانية).pdf</div>
+      <div>صيد الخاطر - ت_ الطنطاوي والألباني</div>
+    </div>
+    <p>The first is a real book — volume two of <i>Simṭ al-laʾālī</i> — and nothing in its name says so. 617 files followed that pattern.</p>
+  </div>
+</section>
+
+<!-- ═══════════ 2 · PRINCIPLE ═══════════ -->
+<section class="part" id="principle">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">2</span>المبدأ: القواعد قبل البرمجة</h2>
+    <p>لم يبدأ العلاج بالبرمجة. بدأ بثلاث جمل على ورقة:</p>
+    <div class="rules"><ol>
+      <li>الاسم من الدليل، لا من التخمين.</li>
+      <li>كل تغيير في خطة يمكن التراجع عنها.</li>
+      <li>لا يُحذف إلا ما ثبت تكراره بايتًا بايتًا.</li>
+    </ol></div>
+    <h3>كيف يعمل وكيل ذكاء اصطناعي تحت القواعد</h3>
+    <p>كُتبت القواعد في ملف واحد — <span class="file">AGENTS.md</span> — يقرأه كل وكيل قبل أن يلمس شيئًا: أين الكتب، كيف يُتصل بالهاتف، ما يُحذف وما لا يُحذف أبدًا، وكيف يُسمّى الكتاب. وكيلان من شركتين مختلفتين يعملان تحت هذا الملف، والقواعد نفسها لكليهما. الآلة تقترح وتنفّذ؛ صاحب المكتبة يراجع ويقرّر، وتصحيحاته تُحفظ في جداول تُقرأ قبل كل تشغيل.</p>
+    <h3>الخطة والسجلّ</h3>
+    <p>كل تغيير يمرّ بخطة: ملف من ثلاثة أعمدة — من أين، إلى أين، لماذا — تُطبَّق بأداة واحدة، ويُتراجع عنها بالأداة نفسها. وكل ما طُبّق كُتب في سجلّ واحد يُضاف إليه ولا يُمحى منه. سطر منه، كما هو:</p>
+    <dl class="ledger">
+      <div><dt>الوقت</dt><dd class="t">2026-10-25 15:25:16</dd></div>
+      <div><dt>الفعل</dt><dd class="t">move</dd></div>
+      <div><dt>من</dt><dd class="m">Books/التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني.pdf</dd></div>
+      <div><dt>إلى</dt><dd class="m">Books/التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني - ت غانم قدوري الحمد - منشورات مركز المخطوطات والتراث والوثائق الكويت.pdf</dd></div>
+      <div><dt>السبب</dt><dd class="t">title page read (book 1502, ok)</dd></div>
+      <div><dt>الخطة</dt><dd class="t">379-names-read-1432-1539</dd></div>
+    </dl>
+    <ul class="tiles">
+      <li><span class="v">532</span><span class="l">خطة قابلة للتراجع</span></li>
+      <li><span class="v">97,925</span><span class="l">سطرًا في السجلّ</span></li>
+      <li><span class="v">151</span><span class="l">أداة صغيرة تؤدي كلٌّ منها عملًا واحدًا</span></li>
+      <li><span class="v">823</span><span class="l">إيداعًا في git</span></li>
+    </ul>
+    <h3>ما الذي سُجّل؟</h3>
+    <div class="chart" role="img" aria-label="أنواع التغييرات المسجَّلة: نقل وإعادة تسمية 43,524؛ إزالة مجلد فارغ 21,115؛ إضافة 16,262؛ حذف نسخة مثبتة التكرار 11,136؛ قصّ 5,617؛ إنشاء 268">
+      <div class="row"><span>نقل وإعادة تسمية</span><div class="bar" style="width:100%"></div><span class="v">43,524</span></div>
+      <div class="row"><span>إزالة مجلد فارغ</span><div class="bar" style="width:48.5%"></div><span class="v">21,115</span></div>
+      <div class="row"><span>إضافة</span><div class="bar gold" style="width:37.4%"></div><span class="v">16,262</span></div>
+      <div class="row"><span>حذف نسخة مثبتة التكرار</span><div class="bar" style="width:25.6%"></div><span class="v">11,136</span></div>
+      <div class="row"><span>قصّ وتقويم (ملفات)</span><div class="bar gold" style="width:12.9%"></div><span class="v">5,617</span></div>
+      <div class="row"><span>إنشاء مجلد</span><div class="bar" style="width:0.6%"></div><span class="v">268</span></div>
+    </div>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">2</span>The principle: rules before code</h2>
+    <p>The cure did not start with code. It started with three sentences on a sheet of paper:</p>
+    <div class="rules"><ol>
+      <li>A name comes from evidence, never from a guess.</li>
+      <li>Every change goes in a plan that can be undone.</li>
+      <li>Nothing is deleted unless it is proven identical, byte for byte.</li>
+    </ol></div>
+    <h3>How an AI agent works under the rules</h3>
+    <p>The rules live in one file — <span class="file">AGENTS.md</span> — that every agent reads before touching anything: where the books are, how the phone is reached, what may be deleted and what never, and how a book is named. Two agents from two different companies work under that file, with the same rules for both. The machine proposes and executes; the library's owner reviews and decides, and his corrections are kept in tables that are read before every run.</p>
+    <h3>The plan and the ledger</h3>
+    <p>Every change goes through a plan: a three-column file — from where, to where, why — applied by one tool and undone by the same tool. Everything applied is written to a single append-only ledger. One of its lines, as it is:</p>
+    <dl class="ledger">
+      <div><dt>Time</dt><dd class="t">2026-10-25 15:25:16</dd></div>
+      <div><dt>Action</dt><dd class="t">move</dd></div>
+      <div><dt>From</dt><dd class="m">Books/التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني.pdf</dd></div>
+      <div><dt>To</dt><dd class="m">Books/التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني - ت غانم قدوري الحمد - منشورات مركز المخطوطات والتراث والوثائق الكويت.pdf</dd></div>
+      <div><dt>Reason</dt><dd class="t">title page read (book 1502, ok)</dd></div>
+      <div><dt>Plan</dt><dd class="t">379-names-read-1432-1539</dd></div>
+    </dl>
+    <ul class="tiles">
+      <li><span class="v">532</span><span class="l">reversible plans</span></li>
+      <li><span class="v">97,925</span><span class="l">ledger lines</span></li>
+      <li><span class="v">151</span><span class="l">small tools, each doing one job</span></li>
+      <li><span class="v">823</span><span class="l">git commits</span></li>
+    </ul>
+    <h3>What was logged</h3>
+    <div class="chart" role="img" aria-label="Logged change types: moves and renames 43,524; empty folders removed 21,115; additions 16,262; proven duplicates deleted 11,136; crops 5,617; folders created 268">
+      <div class="row"><span>Moves and renames</span><div class="bar" style="width:100%"></div><span class="v">43,524</span></div>
+      <div class="row"><span>Empty folders removed</span><div class="bar" style="width:48.5%"></div><span class="v">21,115</span></div>
+      <div class="row"><span>Additions</span><div class="bar gold" style="width:37.4%"></div><span class="v">16,262</span></div>
+      <div class="row"><span>Proven duplicates deleted</span><div class="bar" style="width:25.6%"></div><span class="v">11,136</span></div>
+      <div class="row"><span>Crops and levelling (files)</span><div class="bar gold" style="width:12.9%"></div><span class="v">5,617</span></div>
+      <div class="row"><span>Folders created</span><div class="bar" style="width:0.6%"></div><span class="v">268</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 3 · NAMES ═══════════ -->
+<section class="part" id="names">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">3</span>الأسماء</h2>
+    <p>قاعدة واحدة للمجلد والملف الواحد والمجلدات المتعددة، بلا أقواس ولا فواصل ولا رموز قديمة:</p>
+    <div class="tmpl">‹العنوان› - ‹المؤلف› - ت ‹المحقق› - ‹الناشر› ‹المدينة›</div>
+    <h3>القراءة بالعين</h3>
+    <div class="two">
+      <div>
+        <p>الاسم يُقرأ من صفحة العنوان، لا يُنسخ من كتالوج ولا يُخمَّن من اسم الملف. الكتالوجات تُعين وتُستأنس بها — الشاملة والوقفية وأرشيف الإنترنت — لكن الدليل هو الصفحة نفسها. وكل قراءة تُسجَّل في جدول واحد: العنوان، المؤلف، المحقق، الناشر، المدينة، وملاحظة القارئ؛ ومنه يُبنى الاسم آليًا على القاعدة، ويمرّ إلى الهاتف في خطة.</p>
+      </div>
+      <figure class="shot">
+        <img src="img/old-title-page.jpg" alt="صفحة عنوان مطبوعة قديمة: تسهيل الفوائد وتكميل المقاصد لابن مالك، طُبع في المطبعة الميرية بمكة سنة 1319 هجرية" width="600" height="840" loading="lazy">
+        <figcaption>الدليل: صفحة عنوان «تسهيل الفوائد وتكميل المقاصد» لابن مالك، المطبعة الميرية بمكة، <span class="n">1319</span> هـ. العنوان والمؤلف والناشر والمدينة والسنة — كلها هنا.</figcaption>
+      </figure>
+    </div>
+    <h3>رحلة كتاب واحد في السجلّ</h3>
+    <p>«البيان في عد آي القرآن» لأبي عمرو الداني — من ملف بلا مؤلف ولا محقق إلى اسمه الكامل. كل خطوة في السجلّ:</p>
+    <div class="name-pair"><span class="old">البيان في عد آي القرآن - - ط.pdf</span><span class="new">التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني - ت غانم قدوري الحمد - منشورات مركز المخطوطات والتراث والوثائق الكويت.pdf</span></div>
+    <ol class="timeline">
+      <li><span class="d"><span class="n">3</span> أكتوبر</span>وصل من أرشيف الإنترنت، ووُضع في قسمه من أقسام الشاملة: «التجويد والقراءات».</li>
+      <li><span class="d"><span class="n">10</span> أكتوبر</span>أُضيف اسم المؤلف: أبو عمرو الداني.</li>
+      <li><span class="d"><span class="n">13</span> أكتوبر</span>قُصّت صفحاته وقُوّمت بلا فقد.</li>
+      <li class="gold"><span class="d"><span class="n">25</span> أكتوبر</span>قُرئت صفحة عنوانه فاكتمل الاسم: المحقق غانم قدوري الحمد، والناشر مركز المخطوطات والتراث والوثائق بالكويت.</li>
+    </ol>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">3</span>Names</h2>
+    <p>One rule for a folder, a single file and the volumes of a set, with no parentheses, commas or legacy codes:</p>
+    <div class="tmpl" dir="ltr" style="direction:ltr">‹title› - ‹author› - ت ‹editor› - ‹publisher› ‹city›</div>
+    <h3>Reading by eye</h3>
+    <div class="two">
+      <div>
+        <p>A name is read from the title page — not copied from a catalogue, not guessed from a file name. Catalogues help and are consulted — Shamela, Waqfeya, the Internet Archive — but the evidence is the page itself. Every reading goes into one table: title, author, editor, publisher, city, and the reader's note; the name is composed from it by the rule and reaches the phone through a plan.</p>
+      </div>
+      <figure class="shot">
+        <img src="img/old-title-page.jpg" alt="An old printed title page: Ibn Malik's Tashil al-fawa'id, printed at the Amiriyya press in Mecca in 1319 AH" width="600" height="840" loading="lazy">
+        <figcaption>The evidence: the title page of Ibn Mālik's <i>Tashīl al-fawāʾid</i>, Amīriyya press, Mecca, 1319 AH. Title, author, publisher, city and year — all here.</figcaption>
+      </figure>
+    </div>
+    <h3>One book's journey through the ledger</h3>
+    <p><i>al-Bayān fī ʿadd āy al-Qurʾān</i> by Abū ʿAmr al-Dānī — from a file with no author and no editor to its full name. Every step is in the ledger:</p>
+    <div class="name-pair"><span class="old">البيان في عد آي القرآن - - ط.pdf</span><span class="new">التجويد والقراءات/البيان في عد آي القرآن - أبو عمرو الداني - ت غانم قدوري الحمد - منشورات مركز المخطوطات والتراث والوثائق الكويت.pdf</span></div>
+    <ol class="timeline">
+      <li><span class="d">3 October</span>Arrived from the Internet Archive and was placed in its Shamela section, Tajwīd and readings.</li>
+      <li><span class="d">10 October</span>The author's name added: Abū ʿAmr al-Dānī.</li>
+      <li><span class="d">13 October</span>Its pages cropped and levelled, losslessly.</li>
+      <li class="gold"><span class="d">25 October</span>Its title page read, and the name completed: editor Ghānim Qaddūrī al-Ḥamad, publisher the Manuscripts, Heritage and Documents Centre, Kuwait.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════ 4 · VERIFICATION ═══════════ -->
+<section class="part" id="verify">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">4</span>التحقق</h2>
+    <h3>التكرار بايتًا بايتًا</h3>
+    <p>لا يُحذف ملف لأن اسمه يشبه اسم ملف آخر. التكرار يُثبَت: الحجم نفسه، ثم <span class="n">64 KB</span> متطابقة في البداية وعند الربع والنصف وثلاثة الأرباع والنهاية — ثم تلخيص كامل للملف يُحسب على الهاتف نفسه. الطبعات المختلفة تبقى كلها، والمجلد الذي يجمع عدة كتب لا يُفصل. من النسخ المتطابقة يُحتفظ بالأفضل: الكاملة، ثم ذات الصفحات السليمة، ثم الأعلى دقة، ثم ذات طبقة النصّ.</p>
+    <h3>المقارنة بالمصادر</h3>
+    <ul class="tiles">
+      <li><span class="v">8,598</span><span class="l">كتابًا في الشاملة (<span class="n">40</span> قسمًا) قوبلت بها المكتبة؛ منها <span class="n">3,134</span> على الهاتف</span></li>
+      <li><span class="v">2,999</span><span class="l">كتابًا على الهاتف ليست في الشاملة</span></li>
+      <li><span class="v">11,594</span><span class="l">مادة في المكتبة الوقفية قوبلت بها المكتبة</span></li>
+      <li><span class="v">7,159</span><span class="l">ملفًا تُتبّع أصلها في الليلة الأولى بالحجم الدقيق في قوائم أرشيف الإنترنت</span></li>
+    </ul>
+    <p>المطابقة بالطبعة لا بالعنوان وحده: المحقق والناشر وعدد المجلدات وحجم الملف بالبايت. وما لا يثبت لا يُعتمد، ويُوثَّق بعنوانه وسببه.</p>
+    <figure class="shot">
+      <img src="img/shamela-desk.jpg" alt="صفحة مقارنة المكتبة بالمكتبة الشاملة: بطاقات الأرقام وجدول التغطية حسب الأقسام" width="1200" height="675" loading="lazy">
+      <figcaption>تبويب «مقارنة بالشاملة» في الفهرس العام: المقابلة قسمًا قسمًا.</figcaption>
+    </figure>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">4</span>Verification</h2>
+    <h3>Duplicates, byte for byte</h3>
+    <p>No file is deleted because its name resembles another's. A duplicate is proven: the same size, then 64 KB identical at the start, at a quarter, a half, three quarters and the end — then a full checksum computed on the phone itself. Different editions all stay, and a volume holding several books is never split. Of identical copies the best is kept: complete first, then whole pages, then resolution, then a text layer.</p>
+    <h3>Reconciliation with the sources</h3>
+    <ul class="tiles">
+      <li><span class="v">8,598</span><span class="l">books in Shamela (40 sections) reconciled with the library; 3,134 of them on the phone</span></li>
+      <li><span class="v">2,999</span><span class="l">books on the phone that Shamela does not have</span></li>
+      <li><span class="v">11,594</span><span class="l">items in al-Maktaba al-Waqfeya reconciled with the library</span></li>
+      <li><span class="v">7,159</span><span class="l">files traced to their source on the first night by exact size in Internet Archive file lists</span></li>
+    </ul>
+    <p>A match is made by edition, not by title alone: editor, publisher, number of volumes and the file's size in bytes. What is not proven is not used, and it is documented with its title and reason.</p>
+    <figure class="shot">
+      <img src="img/shamela-desk.jpg" alt="The Shamela comparison page: number cards and the coverage table by section" width="1200" height="675" loading="lazy">
+      <figcaption>The "vs. Shamela" tab of the public index: the reconciliation section by section.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ 5 · PAGES ═══════════ -->
+<section class="part" id="pages">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">5</span>الصفحات</h2>
+    <p>الصفحة الممسوحة تأتي مائلة، بحواف سوداء، وبهوامش تأكل نصف الشاشة. الرؤية الحاسوبية تجد إطار النصّ في كل صفحة، وتحسب إطارًا واحدًا للكتاب كله يتمركز على كل صفحة، وتقوّم الميل — <b>بلا فقد</b>: الصور لا تُمسّ، والقصّ والتقويم يُكتبان في الملف كإطار وتحويل يمكن التراجع عنهما.</p>
+    <figure class="shot">
+      <img src="img/three-stages.jpg" alt="صفحة تفسير في ثلاث مراحل: مائلة، ثم مقوَّمة، ثم مقصوصة" width="961" height="437" loading="lazy">
+      <figcaption>ثلاث مراحل لصفحة واحدة: كما مُسحت، ثم مقوَّمة، ثم مقصوصة على إطار الكتاب.</figcaption>
+    </figure>
+    <ul class="tiles">
+      <li><span class="v">474,268</span><span class="l">صفحة تغطيها <span class="n">1,124</span> وصفة قصّ</span></li>
+      <li><span class="v">8,760</span><span class="l">صفحة فُصلت من صفحات مزدوجة</span></li>
+      <li><span class="v">1,111</span><span class="l">كتابًا أُعيد قصّها في يوم واحد بقاعدة جديدة</span></li>
+      <li><span class="v">32</span><span class="l">نواة في الحاسوب السحابي الذي يتولّى الحساب الثقيل؛ والحاسوب المحمول يحتفظ بوصلة الهاتف</span></li>
+    </ul>
+    <h3>الاختبارات الانحدارية</h3>
+    <p>كل تعديل في الخوارزمية يُجرَّب أولًا على عيّنة من طبعات قرون مختلفة — بولاق والمطبعة الأميرية وبريل وطبعات حديثة — وتُقارن نتائجه بالنتائج السابقة صفحةً صفحة قبل أن يمسّ كتابًا واحدًا على الهاتف.</p>
+    <h3>الإنسان في الحلقة</h3>
+    <p>صاحب المكتبة يراجع على صفحات ويب: صفحة «قبل | بعد» لكل كتاب فيه شكّ، ومربع ملاحظة تحت كل صفحة. <span class="n">1,109</span> ملاحظات كتبها، وكل حكم منها يُحفظ في جدول يُقرأ قبل كل تشغيل. وفي صباح <span class="n">7</span> نوفمبر كتب تحت صفحة من «المخصص» لابن سيده:</p>
+    <blockquote class="remark">
+      <p>«اجعل الإطار الأسود معيارًا للميلان، فهو مائل بوضوح في بعضها»</p>
+      <footer>ملاحظة صاحب المكتبة، <span class="n">7</span> نوفمبر <span class="n">2026</span> — على بطاقة المخصص ج <span class="n">13</span>، طبعة بولاق</footer>
+    </blockquote>
+    <p>الملاحظة صارت قاعدة: الإطار المطبوع يقرّر ميل الصفحة مهما قالت سطور النصّ. جُرّبت القاعدة على العيّنة، ثم شُغّلت على الحواسيب السحابية، وقبل المساء كان <span class="n">1,111</span> كتابًا قد أُعيد قصّه بلا خطأ واحد. الآلة تجد الإطار؛ الإنسان يقرّر الميلان.</p>
+    <figure class="pair">
+      <div class="before"><img src="img/mukhassas-before.jpg" alt="صفحة من المخصص قبل التقويم: الإطار المطبوع مائل، والإطار المكتشف مرسوم بالأحمر" width="480" height="659" loading="lazy"><span>قبل</span></div>
+      <div class="after"><img src="img/mukhassas-after.jpg" alt="الصفحة نفسها بعد التقويم والقصّ: الإطار مستقيم" width="481" height="765" loading="lazy"><span>بعد</span></div>
+      <figcaption>المخصص لابن سيده (ت <span class="n">458</span> هـ)، طبعة بولاق، الجزء <span class="n">13</span>، الصفحة الثالثة.</figcaption>
+    </figure>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">5</span>Pages</h2>
+    <p>A scanned page arrives tilted, with black edges, and with margins that eat half the screen. Computer vision finds the text frame on every page, computes one frame for the whole book and centres it on each page, and levels the tilt — <b>losslessly</b>: the images are never touched; the crop and the rotation are written into the file as a frame and a transform that can be undone.</p>
+    <figure class="shot">
+      <img src="img/three-stages.jpg" alt="A page of a Quran commentary in three stages: tilted, then levelled, then cropped" width="961" height="437" loading="lazy">
+      <figcaption>Three stages of one page: as scanned, then levelled, then cropped to the book's frame.</figcaption>
+    </figure>
+    <ul class="tiles">
+      <li><span class="v">474,268</span><span class="l">pages covered by 1,124 crop recipes</span></li>
+      <li><span class="v">8,760</span><span class="l">pages split out of two-page spreads</span></li>
+      <li><span class="v">1,111</span><span class="l">books re-cropped in a single day under a new rule</span></li>
+      <li><span class="v">32</span><span class="l">cores on the cloud machines that do the heavy work; the laptop keeps the phone's link</span></li>
+    </ul>
+    <h3>The regression bench</h3>
+    <p>Every change to the algorithm is first tried on a sample of editions from different centuries — Būlāq, the Amīriyya press, Brill, modern editions — and its results are compared page by page with the previous ones before it touches a single book on the phone.</p>
+    <h3>The human in the loop</h3>
+    <p>The owner reviews on web pages: a "before | after" page for every book in doubt, with a remark box under each page. He wrote 1,109 remarks, and each ruling is kept in a table read before every run. On the morning of 7 November he wrote under a page of Ibn Sīdah's <i>al-Mukhaṣṣaṣ</i>:</p>
+    <blockquote class="remark">
+      <p lang="ar" dir="rtl">«اجعل الإطار الأسود معيارًا للميلان، فهو مائل بوضوح في بعضها»</p>
+      <footer>"Make the black frame the standard for tilt; in some of them it is clearly leaning." — the owner's remark, 7 November 2026, on the card of al-Mukhaṣṣaṣ vol. 13, Būlāq edition</footer>
+    </blockquote>
+    <p>The remark became a rule: the printed frame decides a page's tilt, whatever the text lines say. The rule was tried on the bench, then run on the cloud machines, and before evening 1,111 books had been re-cropped without a single error. The machine finds the frame; the human decides the tilt.</p>
+    <figure class="pair">
+      <div class="before"><img src="img/mukhassas-before.jpg" alt="A page of al-Mukhassas before levelling: the printed frame leans and the detected frame is drawn in red" width="480" height="659" loading="lazy"><span>before</span></div>
+      <div class="after"><img src="img/mukhassas-after.jpg" alt="The same page after levelling and cropping: the frame is straight" width="481" height="765" loading="lazy"><span>after</span></div>
+      <figcaption>Ibn Sīdah's al-Mukhaṣṣaṣ (d. 458 AH), Būlāq edition, vol. 13, page 3.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ 6 · RESULT ═══════════ -->
+<section class="part" id="result">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">6</span>النتيجة: فهرس مفتوح</h2>
+    <p>الفهرس على الويب، بلا حساب ولا تطبيق: <a href="https://benjelloun.dev/library">benjelloun.dev/library</a>. صفحة واحدة ثابتة، تبويباتها تُبنى آليًا من الأسماء نفسها — فإذا صحّ الاسم صحّ الفهرس.</p>
+    <div class="two">
+      <figure class="shot">
+        <img src="img/index-phone.jpg" alt="الفهرس العام على الهاتف: سطر الإحصاء، الأقسام الأربعون، وبطاقات الكتب" width="560" height="1212" loading="lazy">
+        <figcaption>الفهرس العام على الهاتف.</figcaption>
+      </figure>
+      <div>
+        <ul class="plain">
+          <li><b>الفهرس العام</b> — <span class="n">6,016</span> كتابًا في <span class="n">40</span> قسمًا، بالمحقق والناشر وعدد الصفحات.</li>
+          <li><b>مقارنة بالشاملة</b> و<b>مقارنة بالوقفية</b> — التغطية قسمًا قسمًا.</li>
+          <li><b>توصيات التوسعة</b> — ما يُقترح إضافته إلى كل قسم.</li>
+          <li><b>الكتب متعددة الطبعات</b> — <span class="n">422</span> كتابًا في <span class="n">969</span> نسخة.</li>
+          <li><b>فهرس المنظومات وشروحها</b> — <span class="n">53</span> منظومة معتمدة و<span class="n">136</span> منظومة أخرى.</li>
+          <li><b>فهرس المؤلفين حسب سنة الوفاة</b> — <span class="n">3,817</span> كتابًا مرتّبة على سنة وفاة مؤلفها.</li>
+          <li><b>فهرس المحققين</b> — <span class="n">1,202</span> محققًا وطبعاتهم.</li>
+          <li><b>النسخ المحسنة</b> — <span class="n">73</span> كتابًا حُسّنت صفحاتها بلا فقد.</li>
+          <li><b>فهرس المخطوطات</b> — المخطوطات والخزائن التي تحفظ أصولها.</li>
+        </ul>
+      </div>
+    </div>
+    <figure class="shot">
+      <img src="img/index-desk.jpg" alt="الفهرس العام على الحاسوب: شريط البحث، رقائق الأقسام الأربعين، وبطاقات الكتب الأولى" width="1400" height="788" loading="lazy">
+      <figcaption>الفهرس العام على الحاسوب: البحث بالعنوان أو المؤلف أو المحقق أو الناشر.</figcaption>
+    </figure>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">6</span>The result: an open index</h2>
+    <p>The index is on the web, with no account and no app: <a href="https://benjelloun.dev/library">benjelloun.dev/library</a>. One static page whose tabs are built automatically from the names themselves — when a name is right, the index is right.</p>
+    <div class="two">
+      <figure class="shot">
+        <img src="img/index-phone.jpg" alt="The main index on a phone: the statistics line, the forty sections and the book cards" width="560" height="1212" loading="lazy">
+        <figcaption>The main index on a phone.</figcaption>
+      </figure>
+      <div>
+        <ul class="plain">
+          <li><b>Main index</b> — 6,016 books in 40 sections, with editor, publisher and page count.</li>
+          <li><b>vs. Shamela</b> and <b>vs. Waqfeya</b> — coverage section by section.</li>
+          <li><b>Expansion picks</b> — suggested additions for each section.</li>
+          <li><b>Multi-edition works</b> — 422 works in 969 copies.</li>
+          <li><b>Didactic poems and commentaries</b> — 53 canonical poems and 136 others.</li>
+          <li><b>Authors by year of death</b> — 3,817 books ordered by their author's death year.</li>
+          <li><b>Editors</b> — 1,202 editors and their editions.</li>
+          <li><b>Improved copies</b> — 73 books whose pages were improved losslessly.</li>
+          <li><b>Manuscripts</b> — the manuscripts and the libraries that hold the originals.</li>
+        </ul>
+      </div>
+    </div>
+    <figure class="shot">
+      <img src="img/index-desk.jpg" alt="The main index on a desktop: search bar, the forty section chips and the first book cards" width="1400" height="788" loading="lazy">
+      <figcaption>The main index on a desktop: search by title, author, editor or publisher.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ 7 · LESSONS ═══════════ -->
+<section class="part" id="lessons">
+  <div class="L" lang="ar" dir="rtl">
+    <h2><span class="n no">7</span>ما تعلمته</h2>
+    <ol class="lessons">
+      <li><b>الآلة تجد، والإنسان يقرّر.</b> أفضل ما فعلته الخوارزمية جاء من ملاحظة بشرية واحدة صارت قاعدة.</li>
+      <li><b>القابلية للتراجع تسبق السرعة.</b> كل تغيير في خطة تُطبَّق بأداة واحدة ويُتراجع عنها بالأداة نفسها؛ لذلك يمضي العمل بثقة.</li>
+      <li><b>الأدلة قبل الكتالوجات.</b> الكتالوجات تُعين، وصفحة العنوان تحكم.</li>
+      <li><b>التسجيل أرخص من التذكّر.</b> <span class="n">97,925</span> سطرًا يجيب كلٌّ منها عن: من أين، إلى أين، ولماذا.</li>
+      <li><b>كن جارًا طيبًا.</b> الحساب الثقيل على حواسيب سحابية، ونقل واحد في كل مرة على الشبكة المنزلية.</li>
+    </ol>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2><span class="n no">7</span>Lessons</h2>
+    <ol class="lessons">
+      <li><b>The machine finds; the human decides.</b> The best thing the algorithm did came from one human remark that became a rule.</li>
+      <li><b>Reversibility before speed.</b> Every change is a plan applied by one tool and undone by the same tool; that is what lets the work move with confidence.</li>
+      <li><b>Evidence before catalogues.</b> Catalogues help; the title page rules.</li>
+      <li><b>Logging is cheaper than remembering.</b> 97,925 lines, each answering: from where, to where, and why.</li>
+      <li><b>Be a good neighbour.</b> Heavy computing on cloud machines, and one transfer at a time on the home network.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════ CLOSE ═══════════ -->
+<section class="close" id="close">
+  <div class="L" lang="ar" dir="rtl">
+    <h2>القواعد نفسها تصلح لرفّ واحد… أو لخزانة كاملة.</h2>
+    <p class="big">إن كانت لديك مجموعة — على هاتف، أو على قرص، أو في قاعة مسح ضوئي في مكتبة وقفية أو مركز مخطوطات أو جامعة — فهذه الطريقة قابلة للتكرار: قواعد مكتوبة تخصّك، سجلّ لكل تغيير، والكلمة الأخيرة لك.</p>
+    <p>مكتبتك أنت… كيف ستبدو؟</p>
+    <div class="links">
+      <a href="https://benjelloun.dev/library">تصفّح الفهرس<span>benjelloun.dev/library</span></a>
+      <a href="https://github.com/kmbenjel/phone-library">القواعد والأدوات على GitHub — نجمةٌ تُعين غيرك على إيجادها<span>github.com/kmbenjel/phone-library</span></a>
+      <a href="https://benjelloun.dev">صاحب العمل<span>benjelloun.dev</span></a>
+    </div>
+  </div>
+  <div class="L" lang="en" dir="ltr">
+    <h2>The same rules work for a single shelf — or an entire library.</h2>
+    <p class="big">If you keep a collection — on a phone, on a disk, or in the scanning room of an endowment library, a manuscript centre or a university — this method repeats: written rules of your own, a ledger for every change, and the last word yours.</p>
+    <p>Your own library — what would it look like?</p>
+    <div class="links">
+      <a href="https://benjelloun.dev/library">Browse the index<span>benjelloun.dev/library</span></a>
+      <a href="https://github.com/kmbenjel/phone-library">The rules and tools on GitHub — a star helps others find them<span>github.com/kmbenjel/phone-library</span></a>
+      <a href="https://benjelloun.dev">The author<span>benjelloun.dev</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="L" lang="ar" dir="rtl">الأرقام من سجلّ المشروع، نوفمبر <span class="n">2026</span>. المراجع التي يُستأنس بها: المكتبة الشاملة، المكتبة الوقفية، archive.org. صور الصفحات من طبعات قديمة: بولاق والمطبعة الميرية. <a href="https://benjelloun.dev">benjelloun.dev</a></div>
+    <div class="L" lang="en" dir="ltr">Numbers from the project's ledger, November 2026. References consulted: al-Maktaba al-Shamela, Waqfeya, archive.org. Page images from old editions: Būlāq and the Amīriyya press. <a href="https://benjelloun.dev">benjelloun.dev</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btnAr = document.getElementById('lang-ar'), btnEn = document.getElementById('lang-en');
+  function setLang(l, save) {
+    root.setAttribute('data-lang', l);
+    root.setAttribute('lang', l);
+    root.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+    document.title = l === 'ar' ? 'خِزانةٌ في الجيب — دراسة حالة' : 'A Library in a Pocket — case study';
+    btnAr.setAttribute('aria-pressed', String(l === 'ar'));
+    btnEn.setAttribute('aria-pressed', String(l === 'en'));
+    if (save) { try { localStorage.setItem('khizana-lang', l); } catch (e) {} }
+  }
+  var q = new URLSearchParams(location.search).get('lang');
+  var saved = null; try { saved = localStorage.getItem('khizana-lang'); } catch (e) {}
+  var l = (q === 'en' || q === 'ar') ? q : (saved === 'en' || saved === 'ar') ? saved : (location.hash === '#en' ? 'en' : 'ar');
+  setLang(l, false);
+  btnAr.addEventListener('click', function () { setLang('ar', true); });
+  btnEn.addEventListener('click', function () { setLang('en', true); });
+})();
+</script>
+</body>
+</html>
